@@ -3,274 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soạn Thảo Văn Bản HC - Chặt Tỉa Cây Xanh</title>
+    <title>Soạn Thảo Văn Bản HC - Tự Động Điền</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --a4-width: 210mm;
-            --a4-height: 297mm;
-        }
-
-        body {
-            background-color: #f0f2f5;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* Editor Panel */
-        .editor-panel {
-            background: white;
-            padding: 20px;
-            height: 100vh;
-            overflow-y: auto;
-            border-right: 1px solid #ddd;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-        }
-
-        /* Preview Panel */
-        .preview-panel {
-            background: #525659;
-            padding: 30px;
-            height: 100vh;
-            overflow-y: auto;
-            display: flex;
-            justify-content: center;
-        }
-
-        /* A4 Page Simulation - Quy chuẩn Nghị định 30 */
+        :root { --a4-width: 210mm; --a4-height: 297mm; }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        
+        /* Editor Layout */
+        .editor-panel { background: white; padding: 20px; height: 100vh; overflow-y: auto; border-right: 1px solid #ddd; }
+        .preview-panel { background: #525659; padding: 30px; height: 100vh; overflow-y: auto; display: flex; justify-content: center; }
+        
+        /* A4 Page Style */
         #document-preview {
-            background: white;
-            width: var(--a4-width);
-            min-height: var(--a4-height);
-            padding: 20mm 15mm 20mm 30mm; /* Top Right Bottom Left */
+            background: white; width: var(--a4-width); min-height: var(--a4-height);
+            padding: 20mm 15mm 20mm 30mm;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            font-family: "Times New Roman", Times, serif;
-            font-size: 14pt;
-            line-height: 1.5;
-            color: black;
-            position: relative;
+            font-family: "Times New Roman", Times, serif; font-size: 14pt; line-height: 1.5; color: black;
         }
 
-        /* Typography helpers for Document */
-        .doc-header-table {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        .doc-header-table td {
-            vertical-align: top;
-            text-align: center;
-            padding: 0;
-        }
-        .org-name {
-            font-size: 13pt;
-            font-weight: normal;
-        }
-        .org-subname {
-            font-size: 13pt;
-            font-weight: bold;
-            border-bottom: 1px solid #000;
-            display: inline-block;
-            padding-bottom: 2px;
-            margin-bottom: 5px;
-        }
-        .doc-number {
-            font-size: 13pt;
-        }
-        .nation-title {
-            font-size: 13pt;
-            font-weight: bold;
-        }
-        .nation-motto {
-            font-size: 14pt;
-            font-weight: bold;
-            border-bottom: 1px solid #000;
-            display: inline-block;
-            padding-bottom: 2px;
-            margin-bottom: 5px;
-        }
-        .doc-date {
-            font-size: 14pt;
-            font-style: italic;
-        }
-        .doc-recipient {
-            font-size: 14pt;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        .doc-subject {
-            font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 15px;
-            text-align: left; /* Trích yếu nội dung canh trái dưới số ký hiệu hoặc canh giữa tùy mẫu, ở đây để canh trái theo mẫu CV */
-        }
-        .doc-body {
-            text-align: justify;
-            margin-top: 10px;
-        }
-        .doc-body p {
-            margin-bottom: 6pt;
-            text-indent: 1.27cm; /* Thụt đầu dòng */
-        }
-        .doc-list-tree {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            white-space: pre-line; /* Giữ xuống dòng từ textarea */
-        }
-        .doc-footer-table {
-            width: 100%;
-            margin-top: 30px;
-        }
-        .doc-footer-table td {
-            vertical-align: top;
-        }
-        .recipient-list {
-            font-size: 12pt;
-        }
-        .recipient-title {
-            font-weight: bold;
-            font-size: 12pt;
-            font-style: italic;
-        }
-        .sign-title {
-            font-weight: bold;
-            text-transform: uppercase;
-            text-align: center;
-        }
-        .sign-name {
-            font-weight: bold;
-            text-align: center;
-            margin-top: 80px;
-        }
-
-        /* Utility */
-        .form-label {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #495057;
-        }
-        textarea.form-control {
-            font-family: "Times New Roman", Times, serif; /* Để người dùng nhập thấy giống kết quả */
-        }
+        /* Document Elements */
+        .doc-header-table { width: 100%; margin-bottom: 20px; }
+        .doc-header-table td { vertical-align: top; text-align: center; padding: 0; }
+        .org-subname { font-size: 13pt; font-weight: bold; border-bottom: 1px solid #000; display: inline-block; padding-bottom: 2px; margin-bottom: 5px; }
+        .nation-motto { font-size: 14pt; font-weight: bold; border-bottom: 1px solid #000; display: inline-block; padding-bottom: 2px; margin-bottom: 5px; }
+        .doc-date { font-size: 14pt; font-style: italic; }
+        .doc-subject { font-weight: bold; margin: 15px 0; text-align: left; }
+        .doc-body { text-align: justify; margin-top: 10px; }
+        .doc-body p { margin-bottom: 6pt; text-indent: 1.27cm; }
+        .doc-list-tree { margin: 10px 0; white-space: pre-line; margin-left: 1.27cm; }
+        .recipient-title { font-weight: bold; font-size: 12pt; font-style: italic; }
+        .sign-title { font-weight: bold; text-transform: uppercase; text-align: center; }
+        .sign-name { font-weight: bold; text-align: center; margin-top: 80px; }
+        
+        /* Form Highlights */
+        .variable-input { border-left: 4px solid #0d6efd; background-color: #f8fbff; }
+        .auto-filled-note { font-size: 0.8rem; color: #6c757d; font-style: italic; margin-top: 2px; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html-docx-js-typescript@0.1.5/dist/index.min.js"></script> </head>
+</head>
 <body>
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-5 editor-panel">
-            <h4 class="mb-4 text-primary"><i class="fas fa-file-signature"></i> Soạn Thảo Văn Bản</h4>
-            
+            <h4 class="mb-4 text-primary"><i class="fas fa-magic"></i> Nhập Thông Tin Biến Đổi</h4>
+            <div class="alert alert-info py-2" style="font-size: 0.9rem;">
+                <i class="fas fa-info-circle"></i> Hệ thống sẽ tự động điền tên đường dây và ngày tháng vào các đoạn văn tương ứng.
+            </div>
+
             <div class="mb-3">
-                <button class="btn btn-danger me-2" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> Xuất PDF</button>
-                <button class="btn btn-primary" onclick="exportWord()"><i class="fas fa-file-word"></i> Xuất Word</button>
+                <button class="btn btn-danger btn-sm" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> Xuất PDF</button>
+                <button class="btn btn-primary btn-sm" onclick="exportWord()"><i class="fas fa-file-word"></i> Xuất Word</button>
             </div>
 
             <form id="docForm">
-                <h6 class="text-uppercase text-secondary border-bottom pb-2 mt-4">1. Thông tin chung</h6>
-                <div class="row g-2">
-                    <div class="col-6">
+                <h6 class="text-uppercase text-secondary border-bottom pb-1 mt-3">1. Thông tin văn bản</h6>
+                <div class="row g-2 mb-2">
+                    <div class="col-4">
                         <label class="form-label">Số văn bản</label>
-                        <input type="text" class="form-control" id="inp_soVB" value="46/LĐCT-ĐQLĐD">
+                        <input type="text" class="form-control" id="var_soVB" value="40/LĐCT-ĐQLĐD">
                     </div>
-                    <div class="col-6">
+                    <div class="col-8">
                         <label class="form-label">Ngày ban hành</label>
-                        <input type="text" class="form-control" id="inp_date" value="Tân Sơn Hòa, ngày 07 tháng 01 năm 2026">
+                        <input type="text" class="form-control" id="var_date" value="Tân Sơn Hòa, ngày 06 tháng 01 năm 2026">
                     </div>
                 </div>
 
-                <h6 class="text-uppercase text-secondary border-bottom pb-2 mt-4">2. Nội dung chính</h6>
+                <h6 class="text-uppercase text-secondary border-bottom pb-1 mt-3">2. Thông tin Đường dây & Cắt điện</h6>
                 <div class="mb-3">
-                    <label class="form-label">Trích yếu (Về việc...)</label>
-                    <textarea class="form-control" id="inp_subject" rows="2">Về việc chặt tỉa cây xanh gần đường dây 110kV Phú Định - Hùng Vương</textarea>
+                    <label class="form-label fw-bold">Tên đường dây (Điền 1 lần cho cả VB)</label>
+                    <input type="text" class="form-control variable-input" id="var_lineName" value="đường dây 110kV Việt Thành (171) - Chánh Hưng (172)">
+                    <div class="auto-filled-note">Dữ liệu này sẽ tự động điền vào Trích yếu, Mở bài và Thân bài.</div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Kính gửi (Nơi nhận chính)</label>
-                    <textarea class="form-control" id="inp_to" rows="4">- Trung tâm Quản lý hạ tầng kỹ thuật TP.HCM
-- Công ty TNHH Một Thành viên Công viên Cây xanh
-- Xí nghiệp Công viên Cây xanh 2</textarea>
+                 <div class="mb-3">
+                    <label class="form-label">Thời gian cắt điện (Trong văn bản đề nghị)</label>
+                    <input type="text" class="form-control variable-input" id="var_cutTime" value="từ 07 giờ 00 đến 12 giờ 00 ngày 18/01/2026">
                 </div>
                 
-                <h6 class="text-uppercase text-secondary border-bottom pb-2 mt-4">3. Căn cứ pháp lý & Lý do</h6>
                 <div class="mb-3">
-                    <label class="form-label">Các căn cứ (mỗi căn cứ 1 dòng)</label>
-                    <textarea class="form-control" id="inp_bases" rows="6">Căn cứ Luật Điện lực số 61/2024/QH11 của Quốc hội nước Cộng Hòa Xã Hội Chủ Nghĩa Việt Nam;
-Căn cứ Nghị định số 62/2025/NĐ-CP ngày 04/3/2025 của Chính Phủ về việc Quy định chi tiết thi hành Luật điện lực về bảo vệ công trình điện lực và an toàn trong lĩnh vực điện lực;
-Căn cứ Thông tư số 02/2025/TT-BCT ngày 01 tháng 02 năm 2025 của Bộ Công Thương quy định về bảo vệ công trình điện lực và an toàn trong lĩnh vực điện lực;
-Căn cứ Quy chế phối hợp số 5597/QCPH-TTHT-TCTĐLTPHCM ngày 21/12/2020 ký giữa EVNHCMC và Trung tâm Quản lý hạ tầng Kỹ thuật Tp.HCM;
-Căn cứ Kế hoạch cắt điện đường dây 110kV Phú Định - Hùng Vương từ 8 giờ 00 đến 16 giờ 00 ngày 18/12/2025;</textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Đoạn mở đầu (Hiện trạng...)</label>
-                    <textarea class="form-control" id="inp_intro" rows="4">Hiện nay, do phụ tải tăng cao nên việc cắt điện đường dây 110kV Phú Định - Hùng Vương gặp rất nhiều khó khăn. Đặc biệt đường dây 110kV Phú Định - Hùng Vương cung cấp điện cho hai trạm biến áp 110kV: Phú Định và Hùng Vương.</textarea>
+                    <label class="form-label">Đơn vị phối hợp (Xí nghiệp nào?)</label>
+                    <input type="text" class="form-control" id="var_partner" value="Xí nghiệp Công viên Cây xanh 3">
                 </div>
 
-                <h6 class="text-uppercase text-secondary border-bottom pb-2 mt-4">4. Đề xuất & Kế hoạch</h6>
+                <h6 class="text-uppercase text-secondary border-bottom pb-1 mt-3">3. Căn cứ riêng (Ủy quyền/Kế hoạch)</h6>
                 <div class="mb-3">
-                    <label class="form-label">Nội dung đề nghị (Thời gian cắt điện)</label>
-                    <textarea class="form-control" id="inp_proposal" rows="4">Nhằm đảm bảo an toàn cho sự vận hành liên tục của đường dây 110kV Phú Định - Hùng Vương, Công ty Lưới điện cao thế TP.HCM (Công ty LĐCT) kính đề nghị Quý Cơ quan chặt tỉa các cây xanh có khả năng vi phạm khoảng cách an toàn trong thời gian cắt điện đường dây 110kV Phú Định - Hùng Vương từ 8 giờ 00 đến 16 giờ 00 ngày 22/01/2026.</textarea>
+                    <label class="form-label">Nhập các căn cứ thay đổi (mỗi dòng 1 căn cứ)</label>
+                    <textarea class="form-control" id="var_specificBases" rows="4">Căn cứ Giấy ủy quyền số 3179/UQ-LĐCT ngày 01/11/2025 của Công ty Lưới điện cao thế TP.HCM;
+Căn cứ Giấy ủy quyền số 1957/UQ-LĐCT ngày 17/11/2025 của Đội Quản lý Đường dây (ĐQLĐD) thuộc Công ty Lưới điện cao thế TP.HCM;
+Căn cứ Kế hoạch cắt điện đường dây 110kV Việt Thành (171) - Chánh Hưng (172) từ 07 giờ 00 đến 18 giờ 00 ngày 18/01/2026.</textarea>
                 </div>
-                
-                <div class="mb-3">
+
+                <h6 class="text-uppercase text-secondary border-bottom pb-1 mt-3">4. Khảo sát & Danh sách cây</h6>
+                <div class="mb-2">
                     <label class="form-label">Thời gian khảo sát</label>
-                    <input type="text" class="form-control" id="inp_surveyTime" value="từ 13 giờ 30 phút đến 15 giờ 00 phút, Thứ Sáu ngày 16/01/2026">
+                    <input type="text" class="form-control" id="var_surveyTime" value="từ 14 giờ 00 phút đến 16 giờ 00 phút, Thứ Sáu, ngày 09/01/2026">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Địa điểm khảo sát</label>
-                    <input type="text" class="form-control" id="inp_surveyLoc" value="Giao lộ Võ Văn Kiệt giao với Bình Tiên">
+                    <textarea class="form-control" id="var_surveyLoc" rows="2">cầu Rạch Ông, đường Trần Xuân Soạn, phường Tân Hưng, Quận 7, Tp.HCM</textarea>
                 </div>
-
-                <h6 class="text-uppercase text-secondary border-bottom pb-2 mt-4">5. Danh sách cây & Liên hệ</h6>
                 <div class="mb-3">
-                    <label class="form-label">Danh sách cây (Chi tiết)</label>
-                    <textarea class="form-control" id="inp_treeList" rows="10" style="font-size: 13px;">Tuyến đường Bình Tiên:
-+ Khoảng trụ 9 - 10: 2 cây (17, 4)
-+ Khoảng trụ 10 - 11: 3 cây (12, 20, 10)
-+ Khoảng trụ 11 - 12: 1 cây (26)
-+ Khoảng trụ 13 - 14: 5 cây (52, 58, 60, 62, 64)
-+ Khoảng trụ 15 - 16: 3 cây (3, 5, 7)
-+ Khoảng trụ 16 - 17: 5 cây (21, 17, 15, 13, 11)
-+ Khoảng trụ 18 - 19: 7 cây (31, 33, 35, 37, 39, 41, 43)
-+ Khoảng trụ 20 - 21: 3 cây (49, 51, 53)
-
-Tuyến đường Hồng Bàng:
-+ Khoảng trụ 22 - 23: 1 cây (cây bồ đề không số)
-+ Khoảng trụ 28 - 29: 7 cây (G81, G82, G83, G84, G85, G86, G87)
-+ Khoảng trụ 29 - 30: 5 cây (G76, G77, G78, G79, G80)
-+ Khoảng trụ 30 - 31: 6 cây (G69, G70, G71, G72, G73, G74)
-+ Khoảng trụ 31 - 32: 2 cây (G66, G67)
-+ Khoảng trụ 32 - 33: 7 cây (G59, G60, G62, G63, G64, G61, G65)
-+ Khoảng trụ 33 - 34: 5 cây (G53, G55, G56, G57, G58)
-+ Khoảng trụ 34 - 35: 7 cây (G50, G46, G47, G48, G49, G51, G52)
-+ Khoảng trụ 35 - 36: 6 cây (G39, G43, G44, G40, G41, G45)
-+ Khoảng trụ 36 - 37: 2 cây (G37, G38)</textarea>
-                </div>
-                 <div class="mb-3">
-                    <label class="form-label">Thông tin liên hệ</label>
-                    <textarea class="form-control" id="inp_contact" rows="3">Tổ Đường dây – ĐT: 02822.450.951 hoặc anh Leng SoPhon – Tổ phó tổ QLĐD 1, số điện thoại: 0902.534.184 hoặc anh Dương Trung Hiếu – Đội phó Đội QLĐD, số điện thoại: 0938.040.285.</textarea>
+                    <label class="form-label">Danh sách trụ & cây</label>
+                    <textarea class="form-control" id="var_treeList" rows="8" style="font-size: 13px;">- Khoảng trụ 13-14: 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118
+- Khoảng trụ 14 - 15: 120, 122, 124, 128, 130, 132, 134, 136, 138, 140, 142
+- Khoảng trụ 15 - 16: 144, 146, 148, 150, 152, 154, 156, 158, 160, 162, 164, 166, 168
+- Khoảng trụ 16 - 17: 170, 172, 174, 176, 178, 180, 182, 184, 186, 188, 190, 192, 194, 196, 198, 200
+- Khoảng trụ 17 - 18: 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240
+- Khoảng trụ 18 - 19: 242
+- Khoảng trụ 19 - 20: 244, 246, 248, 250, 252, 254, 256, 258, 260</textarea>
                 </div>
 
-                <h6 class="text-uppercase text-secondary border-bottom pb-2 mt-4">6. Chữ ký & Nơi nhận</h6>
-                <div class="mb-3">
-                    <label class="form-label">Nơi nhận (Footer)</label>
-                    <textarea class="form-control" id="inp_footerRecipients" rows="4">- Như trên;
-- Giám đốc (để báo cáo);
-- P AT (để biết);
-- Lưu: VT, ĐQLĐD.(02).</textarea>
-                </div>
-                <div class="row g-2">
-                    <div class="col-6">
-                        <label class="form-label">Chức vụ ký</label>
-                        <input type="text" class="form-control" id="inp_signTitle" value="TUQ. GIÁM ĐỐC">
-                        <input type="text" class="form-control mt-1" id="inp_signRole" value="KT. ĐỘI TRƯỞNG">
-                        <input type="text" class="form-control mt-1" id="inp_signRole2" value="ĐỘI PHÓ">
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label">Người ký</label>
-                        <input type="text" class="form-control" id="inp_signName" value="Dương Trung Hiếu">
-                    </div>
-                </div>
                 <div class="mb-5"></div>
             </form>
         </div>
@@ -280,49 +124,58 @@ Tuyến đường Hồng Bàng:
                 <table class="doc-header-table">
                     <tr>
                         <td style="width: 40%;">
-                            <div class="org-name">TỔNG CÔNG TY<br>ĐIỆN LỰC TP HỒ CHÍ MINH</div>
+                            <div style="font-size: 13pt;">TỔNG CÔNG TY<br>ĐIỆN LỰC TP HỒ CHÍ MINH</div>
                             <div class="org-subname">CÔNG TY LƯỚI ĐIỆN CAO THẾ<br>THÀNH PHỐ HỒ CHÍ MINH</div>
-                            <div class="doc-number" id="prev_soVB">Số: 46/LĐCT-ĐQLĐD</div>
+                            <div style="font-size: 13pt;" id="prev_soVB">Số: 40/LĐCT-ĐQLĐD</div>
                         </td>
                         <td style="width: 60%;">
-                            <div class="nation-title">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                            <div style="font-size: 13pt; font-weight: bold;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
                             <div class="nation-motto">Độc lập - Tự do - Hạnh phúc</div>
-                            <div class="doc-date" id="prev_date">Tân Sơn Hòa, ngày 07 tháng 01 năm 2026</div>
+                            <div class="doc-date" id="prev_date">Tân Sơn Hòa, ngày 06 tháng 01 năm 2026</div>
                         </td>
                     </tr>
                 </table>
 
-                <div class="doc-subject" id="prev_subject">Về việc chặt tỉa cây xanh gần đường dây 110kV Phú Định - Hùng Vương</div>
+                <div class="doc-subject">Về việc chặt tỉa cây xanh gần <span class="auto_lineName"></span></div>
 
                 <div style="margin-top: 10px;">
                     <strong>Kính gửi:</strong>
-                    <div id="prev_to" style="margin-left: 20px; font-weight: bold;"></div>
+                    <div style="margin-left: 20px; font-weight: bold;">
+                        - Trung tâm Quản lý hạ tầng kỹ thuật TP.HCM<br>
+                        - Công ty TNHH Một Thành viên Công viên Cây xanh<br>
+                        - <span id="prev_partner">Xí nghiệp Công viên Cây xanh 3</span>
+                    </div>
                 </div>
 
                 <div class="doc-body">
-                    <div id="prev_bases"></div>
+                    <div>Căn cứ Luật Điện lực số 61/2024/QH11 của Quốc hội nước Cộng Hòa Xã Hội Chủ Nghĩa Việt Nam;</div>
+                    <div>Căn cứ Nghị định số 62/2025/NĐ-CP ngày 04/3/2025 của Chính Phủ Quy định chi tiết thi hành Luật điện lực về bảo vệ công trình điện lực và an toàn trong lĩnh vực điện lực;</div>
+                    <div>Căn cứ Thông tư số 02/2025/TT-BCT ngày 01 tháng 02 năm 2025 của Bộ Công Thương quy định về bảo vệ công trình điện lực và an toàn trong lĩnh vực điện lực;</div>
+                    <div>Căn cứ Quy chế phối hợp số 5597/QCPH-TTHT-TCTĐLTPHCM ngày 21/12/2020 ký giữa EVNHCMC và Trung tâm Quản lý hạ tầng Kỹ thuật Tp.HCM;</div>
                     
-                    <p id="prev_intro">Hiện nay, do phụ tải tăng cao...</p>
+                    <div id="prev_specificBases"></div>
+
+                    <p>Hiện nay, do phụ tải tăng cao nên việc cắt điện <span class="auto_lineName"></span> gặp rất nhiều khó khăn. Đặc biệt <span class="auto_lineName"></span> cung cấp điện cho các trạm biến áp quan trọng.</p>
                     
-                    <p id="prev_proposal">Nhằm đảm bảo an toàn...</p>
+                    <p>Nhằm đảm bảo an toàn cho sự vận hành liên tục của <span class="auto_lineName"></span>, Công ty Lưới điện cao thế TP.HCM (Công ty LĐCT) kính đề nghị Quý Cơ quan chặt tỉa các cây xanh có khả năng vi phạm khoảng cách an toàn trong thời gian cắt điện <span style="font-weight: bold;" id="prev_cutTime"></span> <span class="auto_lineName"></span>.</p>
                     
-                    <p>Để chuẩn bị đầy đủ nhân lực, phương tiện phối hợp thực hiện chặt tỉa toàn bộ số cây xanh cần chặt tỉa.</p>
+                    <p>Để chuẩn bị đầy đủ nhân lực, phương tiện phối hợp thực hiện chặt tỉa toàn bộ cây xanh cần chặt tỉa.</p>
                     
-                    <p>Công ty LĐCT kính đề nghị Quý Cơ quan cử cán bộ cùng khảo sát hiện trường để thống nhất số lượng cây xanh cần chặt, tỉa;</p>
+                    <p>Công ty LĐCT kính đề nghị Quý Cơ quan cử cán bộ cùng khảo sát hiện trường để thống nhất số lượng cây xanh cần chặt, tỉa, phương án thi công, biện pháp an toàn.</p>
                     
                     <p>Thời gian và địa điểm khảo sát cụ thể như sau:</p>
                     <div style="margin-left: 1.27cm;">
-                        - Thời gian: <span id="prev_surveyTime"></span>.<br>
-                        - Địa điểm: <span id="prev_surveyLoc"></span>.
+                        - Thời gian: <span id="prev_surveyTime" style="font-weight: bold;"></span>.<br>
+                        - Địa điểm: <span id="prev_surveyLoc" style="font-weight: bold;"></span>.
                     </div>
 
-                    <p>Các cây xanh cần thực hiện chặt tỉa vào các ngày cắt điện từ 8 giờ 00 đến 16 giờ 00 ngày 22/01/2026 đối với đường dây như sau:</p>
+                    <p>Các cây xanh cần thực hiện chặt tỉa vào ngày cắt điện như sau:</p>
                     
                     <div class="doc-list-tree" id="prev_treeList"></div>
 
                     <p>Trước khi thực hiện kính đề nghị Quý Cơ quan liên hệ Công ty LĐCT để phối hợp thực hiện các biện pháp an toàn trong quá trình công tác.</p>
                     
-                    <p>Mọi chi tiết xin vui lòng liên hệ: <span id="prev_contact"></span></p>
+                    <p>Mọi chi tiết xin vui lòng liên hệ: Tổ Đường dây – ĐT: 028.22.450.951 hoặc anh Leng SoPhon – Tổ phó ĐD 1, ĐT: 0902.534.184 hoặc anh Dương Trung Hiếu – Đội phó Đội QLĐD, ĐT: 0938.040.285.</p>
 
                     <p>Trân trọng./.</p>
                 </div>
@@ -331,121 +184,92 @@ Tuyến đường Hồng Bàng:
                     <tr>
                         <td style="width: 50%;">
                             <div class="recipient-title">Nơi nhận:</div>
-                            <div class="recipient-list" id="prev_footerRecipients"></div>
+                            <div style="font-size: 12pt;">
+                                - Như trên;<br>
+                                - Giám đốc (để báo cáo);<br>
+                                - Phòng AT (để biết);<br>
+                                - Lưu: VT, ĐQLĐD.
+                            </div>
                         </td>
                         <td style="width: 50%; text-align: center;">
-                            <div class="sign-title" id="prev_signTitle">TUQ. GIÁM ĐỐC</div>
-                            <div class="sign-title" id="prev_signRole">KT. ĐỘI TRƯỞNG</div>
-                            <div class="sign-title" id="prev_signRole2">ĐỘI PHÓ</div>
-                            <div class="sign-name" id="prev_signName">Dương Trung Hiếu</div>
+                            <div class="sign-title">TUQ. GIÁM ĐỐC</div>
+                            <div class="sign-title">KT. ĐỘI TRƯỞNG</div>
+                            <div class="sign-title">ĐỘI PHÓ</div>
+                            <div class="sign-name">Dương Trung Hiếu</div>
                         </td>
                     </tr>
                 </table>
-
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- Data Binding & Live Preview ---
-    const inputs = {
-        'inp_soVB': 'prev_soVB',
-        'inp_date': 'prev_date',
-        'inp_subject': 'prev_subject',
-        'inp_intro': 'prev_intro',
-        'inp_proposal': 'prev_proposal',
-        'inp_surveyTime': 'prev_surveyTime',
-        'inp_surveyLoc': 'prev_surveyLoc',
-        'inp_treeList': 'prev_treeList',
-        'inp_contact': 'prev_contact',
-        'inp_signTitle': 'prev_signTitle',
-        'inp_signRole': 'prev_signRole',
-        'inp_signRole2': 'prev_signRole2',
-        'inp_signName': 'prev_signName'
+    // Configuration
+    const mappings = {
+        'var_soVB': 'prev_soVB',
+        'var_date': 'prev_date',
+        'var_partner': 'prev_partner',
+        'var_cutTime': 'prev_cutTime',
+        'var_surveyTime': 'prev_surveyTime',
+        'var_surveyLoc': 'prev_surveyLoc',
+        'var_treeList': 'prev_treeList'
     };
 
-    const listInputs = {
-        'inp_to': 'prev_to',
-        'inp_bases': 'prev_bases',
-        'inp_footerRecipients': 'prev_footerRecipients'
-    };
-
-    function updatePreview() {
-        // Simple Text Updates
-        for (let [inpId, prevId] of Object.entries(inputs)) {
-            let val = document.getElementById(inpId).value;
+    function updateDoc() {
+        // 1. Direct Text Mappings
+        for (let [inputId, prevId] of Object.entries(mappings)) {
+            let val = document.getElementById(inputId).value;
             let el = document.getElementById(prevId);
-            if(inpId === 'inp_soVB') val = "Số: " + val;
-            if(el) el.innerText = val;
+            if (inputId === 'var_soVB' && !val.startsWith('Số:')) val = "Số: " + val;
+            if (el) el.innerText = val;
         }
 
-        // List Updates (Convert newlines to divs or br)
-        for (let [inpId, prevId] of Object.entries(listInputs)) {
-            let val = document.getElementById(inpId).value;
-            let lines = val.split('\n');
-            let html = lines.map(line => `<div>${line}</div>`).join('');
-            document.getElementById(prevId).innerHTML = html;
-        }
+        // 2. Special Logic: Line Name (Repeated in multiple places)
+        let lineName = document.getElementById('var_lineName').value;
+        document.querySelectorAll('.auto_lineName').forEach(span => {
+            span.innerText = lineName;
+        });
+
+        // 3. Special Logic: Specific Bases (Multiline)
+        let basesVal = document.getElementById('var_specificBases').value;
+        let basesHtml = basesVal.split('\n').map(line => `<div>${line}</div>`).join('');
+        document.getElementById('prev_specificBases').innerHTML = basesHtml;
     }
 
-    // Attach Event Listeners
+    // Initialize Events
     document.querySelectorAll('input, textarea').forEach(el => {
-        el.addEventListener('input', updatePreview);
+        el.addEventListener('input', updateDoc);
     });
 
-    // Initial call
-    updatePreview();
+    // Initial Run
+    updateDoc();
 
-
-    // --- Export Functions ---
-
+    // Export Functions (Keeping generic logic)
     function exportPDF() {
         const element = document.getElementById('document-preview');
         const opt = {
-            margin:       0, // margins are handled by css padding inside the element
-            filename:     'CongVan_ChatCay.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            margin: 0,
+            filename: 'CongVan_ChatCay.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
         html2pdf().set(opt).from(element).save();
     }
 
     function exportWord() {
-        // Simple HTML export suitable for Word
-        // To make it look right in Word, we need to inject a specific XML structure or
-        // use a "MHT" style, but for simple client-side JS, wrapping HTML with Word XML namespaces works decently.
-        
-        var preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
+        var preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body>";
         var postHtml = "</body></html>";
-        
-        // Clone the preview to modify styles for export if needed (e.g., removing shadows)
         var clone = document.getElementById('document-preview').cloneNode(true);
         clone.style.boxShadow = "none";
-        clone.style.margin = "0";
         clone.style.width = "100%";
-        
         var html = preHtml + clone.innerHTML + postHtml;
-
-        var blob = new Blob(['\ufeff', html], {
-            type: 'application/msword'
-        });
-        
-        // Create download link
-        var url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html);
+        var blob = new Blob(['\ufeff', html], { type: 'application/msword' });
         var link = document.createElement("a");
-        document.body.appendChild(link);
-        
-        if(navigator.msSaveOrOpenBlob ){
-            navigator.msSaveOrOpenBlob( blob, 'CongVan_ChatCay.doc');
-        }else{
-            link.href = URL.createObjectURL(blob);
-            link.download = 'CongVan_ChatCay.doc';
-            link.click();
-        }
-        
-        document.body.removeChild(link);
+        link.href = URL.createObjectURL(blob);
+        link.download = 'CongVan_ChatCay.doc';
+        link.click();
     }
 </script>
 
