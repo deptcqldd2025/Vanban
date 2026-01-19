@@ -50,7 +50,7 @@
         <div class="col-md-5 editor-panel">
             <h4 class="mb-4 text-primary"><i class="fas fa-magic"></i> Nhập Thông Tin Biến Đổi</h4>
             <div class="alert alert-info py-2" style="font-size: 0.9rem;">
-                <i class="fas fa-info-circle"></i> Hệ thống sẽ tự động điền tên đường dây và ngày tháng vào các đoạn văn tương ứng.
+                <i class="fas fa-info-circle"></i> Hệ thống sẽ tự động điền tên đường dây vào các đoạn văn tương ứng. Số văn bản và ngày tháng được để trống (dự thảo).
             </div>
 
             <div class="mb-3">
@@ -59,19 +59,7 @@
             </div>
 
             <form id="docForm">
-                <h6 class="text-uppercase text-secondary border-bottom pb-1 mt-3">1. Thông tin văn bản</h6>
-                <div class="row g-2 mb-2">
-                    <div class="col-4">
-                        <label class="form-label">Số văn bản</label>
-                        <input type="text" class="form-control" id="var_soVB" value="40/LĐCT-ĐQLĐD">
-                    </div>
-                    <div class="col-8">
-                        <label class="form-label">Ngày ban hành</label>
-                        <input type="text" class="form-control" id="var_date" value="Tân Sơn Hòa, ngày 06 tháng 01 năm 2026">
-                    </div>
-                </div>
-
-                <h6 class="text-uppercase text-secondary border-bottom pb-1 mt-3">2. Thông tin Đường dây & Cắt điện</h6>
+                <h6 class="text-uppercase text-secondary border-bottom pb-1 mt-3">1. Thông tin Đường dây & Cắt điện</h6>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Tên đường dây (Điền 1 lần cho cả VB)</label>
                     <input type="text" class="form-control variable-input" id="var_lineName" value="đường dây 110kV Việt Thành (171) - Chánh Hưng (172)">
@@ -87,7 +75,7 @@
                     <input type="text" class="form-control" id="var_partner" value="Xí nghiệp Công viên Cây xanh 3">
                 </div>
 
-                <h6 class="text-uppercase text-secondary border-bottom pb-1 mt-3">3. Căn cứ riêng (Ủy quyền/Kế hoạch)</h6>
+                <h6 class="text-uppercase text-secondary border-bottom pb-1 mt-3">2. Căn cứ riêng (Ủy quyền/Kế hoạch)</h6>
                 <div class="mb-3">
                     <label class="form-label">Nhập các căn cứ thay đổi (mỗi dòng 1 căn cứ)</label>
                     <textarea class="form-control" id="var_specificBases" rows="4">Căn cứ Giấy ủy quyền số 3179/UQ-LĐCT ngày 01/11/2025 của Công ty Lưới điện cao thế TP.HCM;
@@ -95,7 +83,7 @@ Căn cứ Giấy ủy quyền số 1957/UQ-LĐCT ngày 17/11/2025 của Đội Q
 Căn cứ Kế hoạch cắt điện đường dây 110kV Việt Thành (171) - Chánh Hưng (172) từ 07 giờ 00 đến 18 giờ 00 ngày 18/01/2026.</textarea>
                 </div>
 
-                <h6 class="text-uppercase text-secondary border-bottom pb-1 mt-3">4. Khảo sát & Danh sách cây</h6>
+                <h6 class="text-uppercase text-secondary border-bottom pb-1 mt-3">3. Khảo sát & Danh sách cây</h6>
                 <div class="mb-2">
                     <label class="form-label">Thời gian khảo sát</label>
                     <input type="text" class="form-control" id="var_surveyTime" value="từ 14 giờ 00 phút đến 16 giờ 00 phút, Thứ Sáu, ngày 09/01/2026">
@@ -126,12 +114,12 @@ Căn cứ Kế hoạch cắt điện đường dây 110kV Việt Thành (171) - 
                         <td style="width: 40%;">
                             <div style="font-size: 13pt;">TỔNG CÔNG TY<br>ĐIỆN LỰC TP HỒ CHÍ MINH</div>
                             <div class="org-subname">CÔNG TY LƯỚI ĐIỆN CAO THẾ<br>THÀNH PHỐ HỒ CHÍ MINH</div>
-                            <div style="font-size: 13pt;" id="prev_soVB">Số: 40/LĐCT-ĐQLĐD</div>
+                            <div style="font-size: 13pt;">Số: ………/LĐCT-ĐQLĐD</div>
                         </td>
                         <td style="width: 60%;">
                             <div style="font-size: 13pt; font-weight: bold;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
                             <div class="nation-motto">Độc lập - Tự do - Hạnh phúc</div>
-                            <div class="doc-date" id="prev_date">Tân Sơn Hòa, ngày 06 tháng 01 năm 2026</div>
+                            <div class="doc-date">Tân Sơn Hòa, ngày …… tháng …… năm 20……</div>
                         </td>
                     </tr>
                 </table>
@@ -207,8 +195,6 @@ Căn cứ Kế hoạch cắt điện đường dây 110kV Việt Thành (171) - 
 <script>
     // Configuration
     const mappings = {
-        'var_soVB': 'prev_soVB',
-        'var_date': 'prev_date',
         'var_partner': 'prev_partner',
         'var_cutTime': 'prev_cutTime',
         'var_surveyTime': 'prev_surveyTime',
@@ -221,7 +207,6 @@ Căn cứ Kế hoạch cắt điện đường dây 110kV Việt Thành (171) - 
         for (let [inputId, prevId] of Object.entries(mappings)) {
             let val = document.getElementById(inputId).value;
             let el = document.getElementById(prevId);
-            if (inputId === 'var_soVB' && !val.startsWith('Số:')) val = "Số: " + val;
             if (el) el.innerText = val;
         }
 
